@@ -53,6 +53,22 @@ describe('useAutoSave', () => {
     expect(result.current.saveStatus).toBe('saved');
   });
 
+  it('flushes pending edits when the page is hidden, but never writes when nothing changed', () => {
+    const initial = createDocument('Doc', 'this tab');
+    const { rerender } = renderHook(({ markdownDocument }) => useAutoSave(markdownDocument, 400), {
+      initialProps: { markdownDocument: initial },
+    });
+
+    // Another tab saved newer work; this idle tab must not overwrite it.
+    localStorage.setItem(DOCUMENT_STORAGE_KEY, JSON.stringify({ ...initial, content: 'other tab' }));
+    act(() => window.dispatchEvent(new Event('pagehide')));
+    expect(storedContent()).toBe('other tab');
+
+    rerender({ markdownDocument: { ...initial, content: 'edited here' } });
+    act(() => window.dispatchEvent(new Event('pagehide')));
+    expect(storedContent()).toBe('edited here');
+  });
+
   it('reports "unsaved" when storage is unavailable', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('QuotaExceededError');

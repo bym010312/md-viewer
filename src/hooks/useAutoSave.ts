@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { AUTO_SAVE_DELAY_MS } from '../constants';
 import { saveDocument } from '../lib/storage';
 import type { MarkdownDocument, SaveStatus } from '../types';
@@ -35,9 +35,15 @@ export function useAutoSave(markdownDocument: MarkdownDocument, delayMs = AUTO_S
     return () => window.clearTimeout(timerId);
   }, [markdownDocument, lastSavedDocument, failedDocument, delayMs, persist]);
 
+  // Only write when this tab has unsaved edits: an idle second tab must not
+  // overwrite newer work from another tab with its stale copy.
+  const flushPendingChanges = useEffectEvent(() => {
+    if (markdownDocument !== lastSavedDocument) persist(markdownDocument);
+  });
+
   // Flush pending edits when the tab is hidden or closed, so the debounce window can't lose work.
   useEffect(() => {
-    const flush = () => saveDocument(latestDocumentRef.current);
+    const flush = () => flushPendingChanges();
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') flush();
     };
