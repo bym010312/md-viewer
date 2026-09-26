@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Color tokens for the parts Tailwind can't style directly:
+ * CodeMirror (via its theme) and highlight.js token spans.
+ */
+:root {
+  --editor-fg: var(--color-zinc-800);
+  --editor-cursor: var(--color-zinc-900);
+  --editor-selection: var(--color-blue-100);
+  --md-heading: var(--color-zinc-950);
+  --md-link: var(--color-blue-600);
+  --md-code: var(--color-rose-700);
+  --md-quote: var(--color-zinc-500);
+  --md-mark: var(--color-zinc-400);
+
+  --code-keyword: #cf222e;
+  --code-string: #0a3069;
+  --code-number: #0550ae;
+  --code-comment: #6e7781;
+  --code-function: #8250df;
+  --code-type: #953800;
+  --code-attr: #116329;
+}
+
+.dark {
+  --editor-fg: var(--color-zinc-200);
+  --editor-cursor: var(--color-zinc-100);
+  --editor-selection: color-mix(in oklab, var(--color-blue-500) 35%, transparent);
+  --md-heading: var(--color-white);
+  --md-link: var(--color-blue-400);
+  --md-code: var(--color-rose-300);
+  --md-quote: var(--color-zinc-400);
+  --md-mark: var(--color-zinc-500);
+
+  --code-keyword: #ff7b72;
+  --code-string: #a5d6ff;
+  --code-number: #79c0ff;
+  --code-comment: #8b949e;
+  --code-function: #d2a8ff;
+  --code-type: #ffa657;
+  --code-attr: #7ee787;
+}
+
+/* Inline code without typography's decorative backticks. */
+.markdown-preview :not(pre) > code {
+  @apply rounded bg-zinc-100 px-1 py-0.5 font-normal dark:bg-zinc-800;
+}
+.markdown-preview :not(pre) > code::before,
+.markdown-preview :not(pre) > code::after {
+  content: none;
+}
+
+.markdown-preview li.task-list-item {
+  @apply list-none;
+}
+.markdown-preview ul:has(> li.task-list-item) {
+  @apply pl-1;
+}
+.markdown-preview .task-list-item-checkbox {
+  @apply m-0 mr-1.5 align-middle;
+}
+
+.markdown-preview pre code .hljs-keyword,
+.markdown-preview pre code .hljs-selector-tag,
+.markdown-preview pre code .hljs-literal,
+.markdown-preview pre code .hljs-built_in {
+  color: var(--code-keyword);
+}
+.markdown-preview pre code .hljs-string,
+.markdown-preview pre code .hljs-regexp {
+  color: var(--code-string);
+}
+.markdown-preview pre code .hljs-number,
+.markdown-preview pre code .hljs-variable,
+.markdown-preview pre code .hljs-symbol {
+  color: var(--code-number);
+}
+.markdown-preview pre code .hljs-comment,
+.markdown-preview pre code .hljs-quote {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.markdown-preview pre code .hljs-title,
+.markdown-preview pre code .hljs-section {
+  color: var(--code-function);
+}
+.markdown-preview pre code .hljs-type,
+.markdown-preview pre code .hljs-class,
+.markdown-preview pre code .hljs-meta {
+  color: var(--code-type);
+}
+.markdown-preview pre code .hljs-attr,
+.markdown-preview pre code .hljs-attribute,
+.markdown-preview pre code .hljs-name,
+.markdown-preview pre code .hljs-tag {
+  color: var(--code-attr);
+}
+
+/* Typography's decorative quote marks would look like part of the user's text. */
+.markdown-preview blockquote {
+  @apply font-normal not-italic;
+}
+.markdown-preview blockquote p::before,
+.markdown-preview blockquote p::after {
+  content: none;
+}

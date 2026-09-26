@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A fast, minimal Markdown editor with live preview." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Markdown Editor</title>
+    <script>
+      // Apply the theme before first paint to avoid a light flash in dark mode.
+      // Mirrors useTheme(); the storage key matches SETTINGS_STORAGE_KEY.
+      (function () {
+        var theme = 'system';
+        try {
+          var settings = JSON.parse(localStorage.getItem('md-editor:settings') || '{}');
+          if (settings && (settings.theme === 'light' || settings.theme === 'dark')) theme = settings.theme;
+        } catch (error) {}
+        var isDark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', isDark);
+        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
