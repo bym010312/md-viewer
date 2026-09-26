@@ -19,8 +19,10 @@ export function titleFromFileName(fileName: string): string {
   return fileName.replace(/\.(md|markdown)$/i, '').trim();
 }
 
-/** Converts a document title into a safe, lowercase `.md` file name. */
-export function sanitizeFileName(title: string): string {
+export type ExportExtension = 'md' | 'pdf';
+
+/** Converts a document title into a safe, lowercase file name (`my-document.md`). */
+export function sanitizeFileName(title: string, extension: ExportExtension = 'md'): string {
   const baseName = title
     .normalize('NFKC')
     .trim()
@@ -34,9 +36,9 @@ export function sanitizeFileName(title: string): string {
     .replace(/^[-.]+|[-.]+$/g, '');
 
   if (!baseName || RESERVED_WINDOWS_NAMES.test(baseName)) {
-    return `${FALLBACK_FILE_NAME}.md`;
+    return `${FALLBACK_FILE_NAME}.${extension}`;
   }
-  return `${baseName}.md`;
+  return `${baseName}.${extension}`;
 }
 
 export type ImportResult =

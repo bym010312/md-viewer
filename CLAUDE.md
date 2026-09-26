@@ -6,9 +6,17 @@ This project is a **web-based Markdown Editor**.
 
 The core product experience is:
 
-**Write → Preview → Export**
+```text
+Write
+  ↓
+Preview
+  ↓
+Export
+   ├ Markdown (.md)
+   └ PDF (.pdf)
+```
 
-Users should be able to write Markdown, preview the rendered result in real time, automatically preserve their work, and import/export Markdown files with minimal friction.
+Users should be able to write Markdown, preview the rendered result in real time, automatically preserve their work, import/export Markdown files, and export the rendered document as PDF with minimal friction.
 
 The MVP should remain simple and focused. Do not add unnecessary backend, authentication, collaboration, or AI features unless explicitly requested.
 
@@ -220,7 +228,9 @@ filename.md
 
 Sanitize generated filenames.
 
-Do not implement PDF or HTML export unless requested.
+Also support PDF export of the rendered preview (see **PDF Export** below).
+
+Do not implement HTML export unless requested.
 
 ---
 
@@ -239,7 +249,6 @@ Do not implement these features during MVP work unless explicitly requested:
 - Version history
 - AI writing
 - AI autocomplete
-- PDF export
 - Payments
 - Subscription systems
 
@@ -821,6 +830,32 @@ document.md
 
 ---
 
+# PDF Export
+
+PDF export prints the **rendered, sanitized preview** — never the raw Markdown source.
+
+```text
+Markdown source → Parser → Sanitization → Safe preview → Print document → PDF
+```
+
+Use the browser's print dialog ("Save as PDF") with print-specific CSS:
+
+- Build a dedicated print-only container from the same sanitizing renderer as the preview.
+- Hide all app UI (header, toolbar, editor, status bar, menus) with `@media print`.
+- A4 portrait, white background and near-black text, even in dark mode.
+- Avoid page breaks after headings and inside code blocks, blockquotes, images and table rows.
+- Wrap long code lines; keep tables and images within the page width.
+- Keep syntax highlight colors with `print-color-adjust: exact`.
+- Do not append URLs after links.
+
+Suggest the file name via `document.title` using the same sanitization rules (`my-document.pdf`, fallback `document.pdf`) and restore the original title afterwards.
+
+Do not add PDF libraries (`jsPDF`, `html2pdf`, `pdfmake`, ...) unless the print approach clearly cannot meet a requirement.
+
+The header offers a single keyboard-accessible Export menu: **Markdown (.md)** and **PDF (.pdf)**.
+
+---
+
 # Error Handling
 
 Errors should be understandable and non-technical where possible.
@@ -1127,7 +1162,7 @@ The MVP is considered complete when a user can:
 5. Switch between editor, preview, and split views.
 6. Refresh the page without losing their document.
 7. Import a Markdown file.
-8. Export the document as `.md`.
+8. Export the document as `.md` and as a print-friendly PDF.
 9. Use light and dark themes.
 10. Use common keyboard shortcuts.
 11. View basic document statistics.
@@ -1141,7 +1176,7 @@ The MVP is considered complete when a user can:
 When implementing this project, always preserve the core experience:
 
 ```text
-Write → Preview → Export
+Write → Preview → Export (Markdown / PDF)
 ```
 
 Do not allow secondary functionality to make this workflow slower, more complicated, or less reliable.

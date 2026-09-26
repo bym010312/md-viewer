@@ -121,3 +121,9 @@ export const CloseIcon = () => (
     <path d="M18 6 6 18M6 6l12 12" />
   </Icon>
 );
+
+export const ChevronDownIcon = () => (
+  <Icon width="12" height="12">
+    <path d="m6 9 6 6 6-6" />
+  </Icon>
+);

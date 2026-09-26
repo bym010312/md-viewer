@@ -22,6 +22,11 @@ describe('sanitizeFileName', () => {
     expect(sanitizeFileName('CON')).toBe('document.md');
   });
 
+  it('supports the .pdf extension with the same rules', () => {
+    expect(sanitizeFileName('My Document', 'pdf')).toBe('my-document.pdf');
+    expect(sanitizeFileName('', 'pdf')).toBe('document.pdf');
+  });
+
   it('limits very long titles', () => {
     const fileName = sanitizeFileName('a'.repeat(500));
     expect(fileName.length).toBeLessThanOrEqual(103);

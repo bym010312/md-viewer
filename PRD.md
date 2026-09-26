@@ -285,10 +285,16 @@ document.md
 notes.md
 ```
 
+또한 렌더링된 Preview 결과를 PDF로 저장할 수 있다.
+
+- 브라우저 인쇄 기능(Save as PDF)과 print 전용 CSS 활용
+- A4 세로, 흰 배경의 읽기 쉬운 문서 (Dark Mode에서도 동일)
+- Header, Toolbar, Editor 등 앱 UI는 PDF에 포함하지 않음
+- 파일명은 Markdown Export와 동일한 규칙 (`my-document.pdf`, 기본값 `document.pdf`)
+
 향후 다음 포맷 지원을 고려한다.
 
 - HTML
-- PDF
 
 ---
 
@@ -451,6 +457,10 @@ Markdown 입력 내용은 Preview 영역에 실시간으로 렌더링되어야 �
 ## FR-07 Markdown Export
 
 사용자는 작성한 문서를 `.md` 파일로 다운로드할 수 있어야 한다.
+
+## FR-07a PDF Export
+
+사용자는 렌더링된 Preview 문서를 PDF로 저장할 수 있어야 한다. PDF에는 문서 내용만 포함되고 앱 UI는 포함되지 않는다.
 
 ## FR-08 View Mode
 
@@ -619,7 +629,9 @@ MVP에서는 서버 없이 LocalStorage 기반으로 동작한다.
 - Preview Only
 - 자동 저장
 - Markdown Import
-- Markdown Export
+- Markdown Export (.md)
+- PDF Export (.pdf)
+- Print-friendly document styling
 - Dark Mode
 - Keyboard Shortcut
 - 글자 / 단어 / 줄 수 표시
@@ -640,7 +652,6 @@ MVP에서는 서버 없이 LocalStorage 기반으로 동작한다.
 - 댓글
 - 버전 관리
 - AI 기능
-- PDF Export
 
 ---
 
@@ -790,7 +801,7 @@ MVP는 다음 조건을 만족하면 완료된 것으로 판단한다.
 5. 작성 내용이 자동 저장된다.
 6. 새로고침 후 문서가 복원된다.
 7. `.md` 파일 Import가 가능하다.
-8. `.md` 파일 Export가 가능하다.
+8. `.md` 파일 Export와 PDF Export가 가능하다.
 9. Light / Dark Mode가 동작한다.
 10. Desktop과 Mobile에서 사용할 수 있다.
 11. Markdown 내 악성 HTML/Script가 실행되지 않는다.
@@ -851,6 +862,14 @@ Markdown Editor의 핵심은 많은 기능을 제공하는 것이 아니라
 
 따라서 초기 버전에서는 협업, 계정, AI 등 복잡한 기능을 제외하고 다음 세 가지 경험에 집중한다.
 
-**Write → Preview → Export**
+```text
+Write
+  ↓
+Preview
+  ↓
+Export
+   ├ Markdown
+   └ PDF
+```
 
 이를 기반으로 향후 문서 관리, Cloud Sync, 협업 및 AI Writing 기능을 단계적으로 확장한다.

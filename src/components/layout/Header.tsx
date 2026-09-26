@@ -1,7 +1,8 @@
 import { useRef, type ChangeEvent } from 'react';
 import type { ThemePreference, ViewMode } from '../../types';
 import { Button } from '../ui/Button';
-import { ExportIcon, ImportIcon } from '../ui/icons';
+import { ImportIcon } from '../ui/icons';
+import { ExportMenu } from './ExportMenu';
 
 const VIEW_MODE_OPTIONS: { value: ViewMode; label: string }[] = [
   { value: 'editor', label: 'Editor' },
@@ -24,7 +25,8 @@ interface HeaderProps {
   themePreference: ThemePreference;
   onThemeChange: (theme: ThemePreference) => void;
   onImportFile: (file: File) => void;
-  onExport: () => void;
+  onExportMarkdown: () => void;
+  onExportPdf: () => void;
 }
 
 export function Header({
@@ -36,7 +38,8 @@ export function Header({
   themePreference,
   onThemeChange,
   onImportFile,
-  onExport,
+  onExportMarkdown,
+  onExportPdf,
 }: HeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -110,10 +113,7 @@ export function Header({
         <ImportIcon />
         <span className="hidden md:inline">Import</span>
       </Button>
-      <Button aria-label="Export as Markdown file" title="Export as .md file" onClick={onExport}>
-        <ExportIcon />
-        <span className="hidden md:inline">Export</span>
-      </Button>
+      <ExportMenu onExportMarkdown={onExportMarkdown} onExportPdf={onExportPdf} />
 
       <label className="sr-only" htmlFor="theme-select">
         Theme

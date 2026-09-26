@@ -45,66 +45,174 @@
   --code-attr: #7ee787;
 }
 
+/* ---------------------------------------------------------------------------
+ * Rendered Markdown, shared by the on-screen preview and the print document.
+ * ------------------------------------------------------------------------- */
+
 /* Inline code without typography's decorative backticks. */
 .markdown-preview :not(pre) > code {
   @apply rounded bg-zinc-100 px-1 py-0.5 font-normal dark:bg-zinc-800;
 }
-.markdown-preview :not(pre) > code::before,
-.markdown-preview :not(pre) > code::after {
+:is(.markdown-preview, .print-document) :not(pre) > code::before,
+:is(.markdown-preview, .print-document) :not(pre) > code::after {
   content: none;
 }
 
-.markdown-preview li.task-list-item {
+:is(.markdown-preview, .print-document) li.task-list-item {
   @apply list-none;
 }
-.markdown-preview ul:has(> li.task-list-item) {
+:is(.markdown-preview, .print-document) ul:has(> li.task-list-item) {
   @apply pl-1;
 }
-.markdown-preview .task-list-item-checkbox {
+:is(.markdown-preview, .print-document) .task-list-item-checkbox {
   @apply m-0 mr-1.5 align-middle;
 }
 
-.markdown-preview pre code .hljs-keyword,
-.markdown-preview pre code .hljs-selector-tag,
-.markdown-preview pre code .hljs-literal,
-.markdown-preview pre code .hljs-built_in {
+/* Typography's decorative quote marks would look like part of the user's text. */
+:is(.markdown-preview, .print-document) blockquote {
+  @apply font-normal not-italic;
+}
+:is(.markdown-preview, .print-document) blockquote p::before,
+:is(.markdown-preview, .print-document) blockquote p::after {
+  content: none;
+}
+
+:is(.markdown-preview, .print-document) pre code :is(.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-built_in) {
   color: var(--code-keyword);
 }
-.markdown-preview pre code .hljs-string,
-.markdown-preview pre code .hljs-regexp {
+:is(.markdown-preview, .print-document) pre code :is(.hljs-string, .hljs-regexp) {
   color: var(--code-string);
 }
-.markdown-preview pre code .hljs-number,
-.markdown-preview pre code .hljs-variable,
-.markdown-preview pre code .hljs-symbol {
+:is(.markdown-preview, .print-document) pre code :is(.hljs-number, .hljs-variable, .hljs-symbol) {
   color: var(--code-number);
 }
-.markdown-preview pre code .hljs-comment,
-.markdown-preview pre code .hljs-quote {
+:is(.markdown-preview, .print-document) pre code :is(.hljs-comment, .hljs-quote) {
   color: var(--code-comment);
   font-style: italic;
 }
-.markdown-preview pre code .hljs-title,
-.markdown-preview pre code .hljs-section {
+:is(.markdown-preview, .print-document) pre code :is(.hljs-title, .hljs-section) {
   color: var(--code-function);
 }
-.markdown-preview pre code .hljs-type,
-.markdown-preview pre code .hljs-class,
-.markdown-preview pre code .hljs-meta {
+:is(.markdown-preview, .print-document) pre code :is(.hljs-type, .hljs-class, .hljs-meta) {
   color: var(--code-type);
 }
-.markdown-preview pre code .hljs-attr,
-.markdown-preview pre code .hljs-attribute,
-.markdown-preview pre code .hljs-name,
-.markdown-preview pre code .hljs-tag {
+:is(.markdown-preview, .print-document) pre code :is(.hljs-attr, .hljs-attribute, .hljs-name, .hljs-tag) {
   color: var(--code-attr);
 }
 
-/* Typography's decorative quote marks would look like part of the user's text. */
-.markdown-preview blockquote {
-  @apply font-normal not-italic;
+/* ---------------------------------------------------------------------------
+ * Print / PDF export
+ * The print document is built by lib/exportPdf.ts outside the React root.
+ * ------------------------------------------------------------------------- */
+
+.print-document {
+  display: none;
 }
-.markdown-preview blockquote p::before,
-.markdown-preview blockquote p::after {
-  content: none;
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 20mm;
+  }
+
+  /* Only the rendered document is printed — never the app UI. */
+  body > :not(.print-document) {
+    display: none !important;
+  }
+
+  /* Always a light document, even when the app is in dark mode. */
+  html,
+  body {
+    background: #fff !important;
+    color-scheme: light;
+  }
+
+  .print-document {
+    display: block;
+    max-width: none;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: #18181b;
+
+    /* Light code colors regardless of the inherited .dark values. */
+    --code-keyword: #cf222e;
+    --code-string: #0a3069;
+    --code-number: #0550ae;
+    --code-comment: #6e7781;
+    --code-function: #8250df;
+    --code-type: #953800;
+    --code-attr: #116329;
+  }
+
+  .print-document :is(h1, h2, h3, h4, h5, h6) {
+    break-after: avoid;
+    break-inside: avoid;
+  }
+
+  .print-document :is(p, li) {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .print-document :is(pre, blockquote, img, tr) {
+    break-inside: avoid;
+  }
+
+  .print-document a {
+    color: #1d4ed8;
+  }
+
+  .print-document :not(pre) > code {
+    border-radius: 3px;
+    background: #f4f4f5;
+    padding: 0.1em 0.3em;
+    font-weight: 400;
+  }
+
+  /* Wrap long lines: a horizontal scrollbar is meaningless on paper. */
+  .print-document pre {
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border: 1px solid #e4e4e7;
+    background: #f6f8fa;
+    color: #24292f;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    padding: 10pt 12pt;
+  }
+
+  /* Browsers drop backgrounds and colors when printing unless asked to keep them. */
+  .print-document :is(pre, pre *, :not(pre) > code, th) {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-document table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+  }
+  .print-document thead {
+    display: table-header-group;
+  }
+  .print-document :is(th, td) {
+    border: 1px solid #d4d4d8;
+    padding: 4pt 6pt;
+    /* Long URLs/tokens may break anywhere so the table fits the page, but the
+       minimum width stops them from squeezing short columns into broken words. */
+    overflow-wrap: anywhere;
+    min-width: 5em;
+    vertical-align: top;
+  }
+  .print-document th {
+    background: #f4f4f5;
+    font-weight: 600;
+  }
+
+  .print-document img {
+    max-width: 100%;
+    max-height: 240mm;
+    height: auto;
+  }
 }

@@ -11,7 +11,9 @@ import { DEFAULT_DOCUMENT_TITLE, SAMPLE_MARKDOWN } from './constants';
 import { useAutoSave } from './hooks/useAutoSave';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useMediaQuery } from './hooks/useMediaQuery';
+import { usePrintDocument } from './hooks/usePrintDocument';
 import { useTheme } from './hooks/useTheme';
+import { exportDocumentAsPdf } from './lib/exportPdf';
 import { downloadMarkdown, readMarkdownFile } from './lib/file';
 import { getDocumentStats } from './lib/stats';
 import { createDocument, loadDocument, loadSettings, saveSettings } from './lib/storage';
@@ -33,6 +35,7 @@ export default function App() {
   useTheme(settings.theme);
   const { saveStatus, saveNow } = useAutoSave(markdownDocument);
   useKeyboardShortcuts({ onSave: saveNow });
+  usePrintDocument(markdownDocument.title, markdownDocument.content);
 
   const updateSettings = (changes: Partial<EditorSettings>) => {
     const nextSettings = { ...settings, ...changes };
@@ -118,7 +121,8 @@ export default function App() {
         themePreference={settings.theme}
         onThemeChange={(theme) => updateSettings({ theme })}
         onImportFile={(file) => void importFile(file)}
-        onExport={() => downloadMarkdown(markdownDocument.title, markdownDocument.content)}
+        onExportMarkdown={() => downloadMarkdown(markdownDocument.title, markdownDocument.content)}
+        onExportPdf={() => void exportDocumentAsPdf(markdownDocument.title, markdownDocument.content)}
       />
 
       {errorMessage && (

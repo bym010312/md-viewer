@@ -1,6 +1,6 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+type ButtonProps = ComponentPropsWithRef<'button'>;
 
 /** Compact, borderless button shared by the header and toolbar. */
 export function Button({ className = '', type = 'button', ...props }: ButtonProps) {
