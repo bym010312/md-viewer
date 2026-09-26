@@ -6,11 +6,13 @@ import { EditorView, drawSelection, keymap, placeholder } from '@codemirror/view
 import { tags } from '@lezer/highlight';
 import { useEffect, useEffectEvent, useImperativeHandle, useRef, type Ref } from 'react';
 import { applyMarkdownFormat } from '../../lib/editorCommands';
+import type { EditorScrollAdapter } from '../../lib/scrollSync';
 import type { MarkdownFormat } from '../../types';
 
 export interface MarkdownEditorHandle {
   applyFormat: (format: MarkdownFormat) => void;
   focus: () => void;
+  getScrollAdapter: () => EditorScrollAdapter | null;
 }
 
 interface MarkdownEditorProps {
@@ -143,6 +145,19 @@ export function MarkdownEditor({ value, onChange, ref }: MarkdownEditorProps) {
         view.focus();
       },
       focus: () => viewRef.current?.focus(),
+      getScrollAdapter: () => {
+        const view = viewRef.current;
+        if (!view) return null;
+        return {
+          scrollElement: view.scrollDOM,
+          contentElement: view.contentDOM,
+          getLineTop: (line) => {
+            if (line < 1 || line > view.state.doc.lines) return null;
+            // Block tops are relative to the document start, which sits below the content padding.
+            return view.lineBlockAt(view.state.doc.line(line).from).top + view.documentPadding.top;
+          },
+        };
+      },
     }),
     [],
   );

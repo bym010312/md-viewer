@@ -72,6 +72,22 @@ function taskListRule(state: StateCore): void {
   }
 }
 
+// Blocks rendered as a single token instead of an open/close pair.
+const SELF_CONTAINED_BLOCKS = new Set(['fence', 'code_block', 'hr']);
+
+/**
+ * Tags every rendered block with the 1-based source line it starts on
+ * (`data-source-line`, matching CodeMirror line numbers), so the preview can
+ * be scrolled to the block that corresponds to an editor line.
+ */
+function sourceLineRule(state: StateCore): void {
+  for (const token of state.tokens) {
+    const isBlockStart = token.nesting === 1 || SELF_CONTAINED_BLOCKS.has(token.type);
+    if (!token.block || !isBlockStart || !token.map) continue;
+    token.attrSet('data-source-line', String(token.map[0] + 1));
+  }
+}
+
 const markdownRenderer = new MarkdownIt({
   // Raw HTML in the source is escaped, never rendered.
   html: false,
@@ -80,6 +96,7 @@ const markdownRenderer = new MarkdownIt({
   highlight: highlightCode,
 });
 markdownRenderer.core.ruler.after('inline', 'task_list', taskListRule);
+markdownRenderer.core.ruler.push('source_line', sourceLineRule);
 
 // Open external links in a new tab without giving the new page access to `window.opener`.
 DOMPurify.addHook('afterSanitizeAttributes', (node) => {

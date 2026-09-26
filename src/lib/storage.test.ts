@@ -40,20 +40,25 @@ describe('document persistence', () => {
 });
 
 describe('settings persistence', () => {
-  it('defaults to system theme and split view', () => {
-    expect(loadSettings()).toEqual({ theme: 'system', viewMode: 'split' });
+  it('defaults to system theme, split view and scroll sync on', () => {
+    expect(loadSettings()).toEqual({ theme: 'system', viewMode: 'split', scrollSync: true });
   });
 
   it('restores saved settings', () => {
-    saveSettings({ theme: 'dark', viewMode: 'preview' });
-    expect(loadSettings()).toEqual({ theme: 'dark', viewMode: 'preview' });
+    saveSettings({ theme: 'dark', viewMode: 'preview', scrollSync: false });
+    expect(loadSettings()).toEqual({ theme: 'dark', viewMode: 'preview', scrollSync: false });
+  });
+
+  it('keeps scroll sync on for settings saved before the option existed', () => {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ theme: 'dark', viewMode: 'split' }));
+    expect(loadSettings()).toEqual({ theme: 'dark', viewMode: 'split', scrollSync: true });
   });
 
   it('replaces invalid values with defaults', () => {
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ theme: 'neon', viewMode: 'editor' }));
-    expect(loadSettings()).toEqual({ theme: 'system', viewMode: 'editor' });
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ theme: 'neon', viewMode: 'editor', scrollSync: 'no' }));
+    expect(loadSettings()).toEqual({ theme: 'system', viewMode: 'editor', scrollSync: true });
 
     localStorage.setItem(SETTINGS_STORAGE_KEY, '[]');
-    expect(loadSettings()).toEqual({ theme: 'system', viewMode: 'split' });
+    expect(loadSettings()).toEqual({ theme: 'system', viewMode: 'split', scrollSync: true });
   });
 });

@@ -72,6 +72,8 @@ export function parseStoredSettings(value: unknown): EditorSettings {
   return {
     theme: theme ?? DEFAULT_SETTINGS.theme,
     viewMode: viewMode ?? DEFAULT_SETTINGS.viewMode,
+    // Settings saved before scroll sync existed have no value; keep the default.
+    scrollSync: typeof value.scrollSync === 'boolean' ? value.scrollSync : DEFAULT_SETTINGS.scrollSync,
   };
 }
 

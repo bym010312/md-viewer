@@ -10,6 +10,7 @@ export const AUTO_SAVE_DELAY_MS = 400;
 export const DEFAULT_SETTINGS: EditorSettings = {
   theme: 'system',
   viewMode: 'split',
+  scrollSync: true,
 };
 
 export const DEFAULT_DOCUMENT_TITLE = 'Welcome';

@@ -12,6 +12,7 @@ import { useAutoSave } from './hooks/useAutoSave';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { usePrintDocument } from './hooks/usePrintDocument';
+import { useScrollSync } from './hooks/useScrollSync';
 import { useTheme } from './hooks/useTheme';
 import { exportDocumentAsPdf } from './lib/exportPdf';
 import { downloadMarkdown, readMarkdownFile } from './lib/file';
@@ -30,12 +31,20 @@ export default function App() {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const dragDepthRef = useRef(0);
   const editorRef = useRef<MarkdownEditorHandle>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const isDesktop = useMediaQuery('(min-width: 768px)');
   useTheme(settings.theme);
   const { saveStatus, saveNow } = useAutoSave(markdownDocument);
   useKeyboardShortcuts({ onSave: saveNow });
   usePrintDocument(markdownDocument.title, markdownDocument.content);
+  useScrollSync({
+    // Both panes are only visible side by side in the desktop split view.
+    isActive: settings.scrollSync && isDesktop && settings.viewMode === 'split',
+    editorRef,
+    previewRef,
+    markdownContent: markdownDocument.content,
+  });
 
   const updateSettings = (changes: Partial<EditorSettings>) => {
     const nextSettings = { ...settings, ...changes };
@@ -118,6 +127,8 @@ export default function App() {
         viewMode={settings.viewMode}
         onViewModeChange={(viewMode) => updateSettings({ viewMode })}
         showViewModeSwitch={isDesktop}
+        scrollSync={settings.scrollSync}
+        onScrollSyncChange={(scrollSync) => updateSettings({ scrollSync })}
         themePreference={settings.theme}
         onThemeChange={(theme) => updateSettings({ theme })}
         onImportFile={(file) => void importFile(file)}
@@ -146,7 +157,7 @@ export default function App() {
         isDesktop={isDesktop}
         toolbar={<EditorToolbar onFormat={applyFormat} />}
         editor={<MarkdownEditor ref={editorRef} value={markdownDocument.content} onChange={updateContent} />}
-        preview={<MarkdownPreview markdown={markdownDocument.content} />}
+        preview={<MarkdownPreview ref={previewRef} markdown={markdownDocument.content} />}
       />
 
       <StatusBar stats={stats} saveStatus={saveStatus} />

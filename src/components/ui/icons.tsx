@@ -127,3 +127,9 @@ export const ChevronDownIcon = () => (
     <path d="m6 9 6 6 6-6" />
   </Icon>
 );
+
+export const ScrollSyncIcon = () => (
+  <Icon>
+    <path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3" />
+  </Icon>
+);

@@ -72,7 +72,7 @@ export function Workspace({ viewMode, isDesktop, toolbar, editor, preview }: Wor
             role={isDesktop ? 'region' : 'tabpanel'}
             aria-labelledby={isDesktop ? undefined : 'tab-preview'}
             aria-label={isDesktop ? 'Preview' : undefined}
-            className="min-h-0 overflow-y-auto"
+            className="min-h-0 overflow-hidden"
           >
             {preview}
           </section>

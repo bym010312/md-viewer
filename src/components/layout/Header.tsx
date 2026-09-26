@@ -1,7 +1,7 @@
 import { useRef, type ChangeEvent } from 'react';
 import type { ThemePreference, ViewMode } from '../../types';
 import { Button } from '../ui/Button';
-import { ImportIcon } from '../ui/icons';
+import { ImportIcon, ScrollSyncIcon } from '../ui/icons';
 import { ExportMenu } from './ExportMenu';
 
 const VIEW_MODE_OPTIONS: { value: ViewMode; label: string }[] = [
@@ -22,6 +22,8 @@ interface HeaderProps {
   viewMode: ViewMode;
   onViewModeChange: (viewMode: ViewMode) => void;
   showViewModeSwitch: boolean;
+  scrollSync: boolean;
+  onScrollSyncChange: (scrollSync: boolean) => void;
   themePreference: ThemePreference;
   onThemeChange: (theme: ThemePreference) => void;
   onImportFile: (file: File) => void;
@@ -35,6 +37,8 @@ export function Header({
   viewMode,
   onViewModeChange,
   showViewModeSwitch,
+  scrollSync,
+  onScrollSyncChange,
   themePreference,
   onThemeChange,
   onImportFile,
@@ -98,6 +102,37 @@ export function Header({
             );
           })}
         </div>
+      )}
+
+      {showViewModeSwitch && (
+        <button
+          type="button"
+          role="switch"
+          aria-checked={scrollSync}
+          aria-label="Synchronize editor and preview scrolling"
+          title={viewMode === 'split' ? 'Scroll sync' : 'Scroll sync (works in Split view)'}
+          onClick={() => onScrollSyncChange(!scrollSync)}
+          className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2 text-xs text-zinc-700 hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        >
+          <ScrollSyncIcon />
+          <span className="hidden lg:inline">Scroll sync</span>
+          {/* The knob position and the On/Off text show the state without relying on color. */}
+          <span
+            aria-hidden="true"
+            className={`relative h-3.5 w-6 rounded-full transition-colors ${
+              scrollSync ? 'bg-zinc-900 dark:bg-zinc-100' : 'bg-zinc-300 dark:bg-zinc-700'
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 size-2.5 rounded-full bg-white transition-[left] ${
+                scrollSync ? 'left-3 dark:bg-zinc-900' : 'left-0.5 dark:bg-zinc-400'
+              }`}
+            />
+          </span>
+          <span aria-hidden="true" className="w-5 text-left">
+            {scrollSync ? 'On' : 'Off'}
+          </span>
+        </button>
       )}
 
       <input

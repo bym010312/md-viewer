@@ -6,12 +6,25 @@ describe('renderMarkdown', () => {
     const html = renderMarkdown(
       ['# Title', '', '**bold** *italic* ~~strike~~ `code`', '', '| a | b |', '| - | - |', '| 1 | 2 |'].join('\n'),
     );
-    expect(html).toContain('<h1>Title</h1>');
+    expect(html).toMatch(/<h1[^>]*>Title<\/h1>/);
     expect(html).toContain('<strong>bold</strong>');
     expect(html).toContain('<em>italic</em>');
     expect(html).toContain('<s>strike</s>');
     expect(html).toContain('<code>code</code>');
-    expect(html).toContain('<table>');
+    expect(html).toMatch(/<table[^>]*>/);
+  });
+
+  it('tags blocks with their 1-based source line for scroll sync', () => {
+    const container = document.createElement('div');
+    container.innerHTML = renderMarkdown('# Title\n\nParagraph\n\n```js\nlet a;\n```\n\n- item\n\n---\n\n| a |\n| - |\n| 1 |');
+    const lineOf = (selector: string) => container.querySelector<HTMLElement>(selector)?.dataset.sourceLine;
+
+    expect(lineOf('h1')).toBe('1');
+    expect(lineOf('p')).toBe('3');
+    expect(lineOf('pre code')).toBe('5');
+    expect(lineOf('li')).toBe('9');
+    expect(lineOf('hr')).toBe('11');
+    expect(lineOf('tbody tr')).toBe('15');
   });
 
   it('renders task list items as disabled checkboxes', () => {

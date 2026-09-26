@@ -17,6 +17,7 @@ export interface MarkdownDocument {
 export interface EditorSettings {
   theme: ThemePreference;
   viewMode: ViewMode;
+  scrollSync: boolean;
 }
 
 export type MarkdownFormat =
